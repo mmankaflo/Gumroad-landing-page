@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f2f4e9;
+      --paper-raised: #fbfcf6;
+      --ink: #17231f;
+      --muted: #59645d;
+      --line: #cbd2c4;
+      --lime: #d3fb49;
+      --blue: #3158ed;
+      --coral: #e9684b;
+      --shadow: 9px 10px 0 #17231f;
+      --grid: rgba(23, 35, 31, .06);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #17211e;
+      --paper-raised: #202c27;
+      --ink: #f1f3e8;
+      --muted: #bec8bd;
+      --line: #46534b;
+      --lime: #d3fb49;
+      --blue: #8da6ff;
+      --coral: #ff987c;
+      --shadow: 9px 10px 0 #090e0c;
+      --grid: rgba(241, 243, 232, .055);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --paper: #17211e;
+        --paper-raised: #202c27;
+        --ink: #f1f3e8;
+        --muted: #bec8bd;
+        --line: #46534b;
+        --lime: #d3fb49;
+        --blue: #8da6ff;
+        --coral: #ff987c;
+        --shadow: 9px 10px 0 #090e0c;
+        --grid: rgba(241, 243, 232, .055);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background-color: var(--paper);
+      background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      transition: background-color .25s ease, color .25s ease;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .skip-link {
+      position: absolute;
+      z-index: 20;
+      top: 10px;
+      left: 10px;
+      padding: 10px 14px;
+      transform: translateY(-160%);
+      background: var(--lime);
+      color: #17231f;
+      font-weight: 800;
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .shell { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      border-bottom: 1px solid var(--line);
+    }
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .mark {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      background: var(--lime);
+      color: #17231f;
+      border: 1px solid var(--ink);
+      transform: rotate(-5deg);
+      font-size: 14px;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 22px; }
+    .top-link {
+      color: var(--muted);
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+      text-transform: uppercase;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      background: var(--paper-raised);
+      color: var(--ink);
+      cursor: pointer;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+    }
+    .theme-toggle:hover { border-color: var(--ink); }
+    .theme-toggle:focus-visible, a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 4px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr);
+      align-items: center;
+      gap: 64px;
+      padding-block: 74px 82px;
+    }
+    .eyebrow, .section-kicker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { width: 25px; height: 3px; background: var(--coral); content: ""; }
+    h1, h2, p { margin-top: 0; }
+    h1 {
+      max-width: 650px;
+      margin-bottom: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 72px;
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: .98;
+    }
+    h1 em { color: var(--blue); font-weight: 500; }
+    .hero-copy {
+      max-width: 530px;
+      margin-bottom: 29px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+    .hero-copy strong { color: var(--ink); font-weight: 700; }
+    .buy-row { display: flex; align-items: center; flex-wrap: wrap; gap: 17px; }
+    .buy-button {
+      display: inline-flex;
+      min-height: 58px;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 14px 20px;
+      border: 1px solid #17231f;
+      background: var(--lime);
+      color: #17231f;
+      box-shadow: 5px 5px 0 #17231f;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .buy-button:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #17231f; }
+    .buy-button:active { transform: translate(5px, 5px); box-shadow: 0 0 0 #17231f; }
+    .button-arrow { font-size: 20px; line-height: 1; }
+    .price-note { color: var(--muted); font-family: "Courier New", monospace; font-size: 12px; }
+    .price-note strong { color: var(--ink); font-size: 15px; }
+    .review-line { display: flex; gap: 9px; align-items: center; margin-top: 22px; color: var(--muted); font-size: 13px; }
+    .review-star { color: var(--coral); font-size: 17px; }
+    .review-line [data-gumroad-field="rating"] { color: var(--ink); font-weight: 800; }
+
+    .visual { position: relative; min-height: 455px; display: grid; place-items: center; }
+    .visual::before {
+      position: absolute;
+      top: 30px;
+      right: 3%;
+      width: 82%;
+      height: 83%;
+      border: 1px solid var(--ink);
+      background: var(--blue);
+      content: "";
+      transform: rotate(7deg);
+    }
+    .visual::after {
+      position: absolute;
+      bottom: 23px;
+      left: 3%;
+      width: 38%;
+      height: 72px;
+      border: 1px solid var(--ink);
+      background: var(--coral);
+      content: "";
+      transform: rotate(-5deg);
+    }
+    .cover-frame {
+      position: relative;
+      z-index: 1;
+      width: min(360px, 81%);
+      padding: 13px;
+      border: 1px solid var(--ink);
+      background: var(--paper-raised);
+      box-shadow: var(--shadow);
+      transform: rotate(-3deg);
+    }
+    .cover-frame img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: var(--lime); }
+    .cover-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 2px 1px;
+      font-family: "Courier New", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .cover-caption span:last-child { color: var(--muted); }
+    .sticker {
+      position: absolute;
+      z-index: 2;
+      top: 36px;
+      left: 0;
+      display: grid;
+      width: 88px;
+      height: 88px;
+      place-items: center;
+      border: 1px solid #17231f;
+      border-radius: 50%;
+      background: var(--lime);
+      color: #17231f;
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: center;
+      transform: rotate(10deg);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-block: 1px solid var(--line);
+      background: var(--paper-raised);
+    }
+    .stat { min-height: 115px; padding: 22px 24px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+    .stat strong { display: block; margin-bottom: 5px; font-family: Georgia, "Times New Roman", serif; font-size: 35px; font-weight: 500; line-height: 1; }
+    .stat span { color: var(--muted); font-family: "Courier New", monospace; font-size: 11px; text-transform: uppercase; }
+
+    .section { padding-block: 104px; }
+    .section-heading { display: grid; grid-template-columns: .75fr 1.25fr; gap: 48px; align-items: start; margin-bottom: 42px; }
+    .section-kicker { padding-top: 12px; }
+    .section-kicker b { color: var(--coral); font-size: 16px; }
+    h2 { margin-bottom: 0; font-family: Georgia, "Times New Roman", serif; font-size: 50px; font-weight: 500; letter-spacing: 0; line-height: 1.08; }
+    .section-intro { max-width: 660px; margin: 17px 0 0; color: var(--muted); font-size: 16px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); }
+    .step { min-height: 234px; padding: 24px; border-right: 1px solid var(--line); }
+    .step:last-child { border-right: 0; }
+    .step-number { display: inline-grid; width: 34px; height: 34px; place-items: center; margin-bottom: 29px; border: 1px solid var(--ink); border-radius: 50%; font-family: "Courier New", monospace; font-size: 12px; }
+    .step h3, .feature h3 { margin: 0 0 9px; font-family: Georgia, "Times New Roman", serif; font-size: 25px; font-weight: 500; line-height: 1.15; }
+    .step p, .feature p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+
+    .included { padding-block: 0 100px; }
+    .included-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 72px; align-items: start; padding: 39px; border: 1px solid var(--ink); background: var(--blue); color: #fff; box-shadow: var(--shadow); }
+    .included-layout .section-kicker { color: rgba(255,255,255,.82); }
+    .included-layout h2 { max-width: 400px; margin-top: 18px; font-size: 46px; }
+    .included-layout .section-intro { color: rgba(255,255,255,.82); }
+    .feature-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 27px; }
+    .feature { min-height: 126px; padding: 15px 0; border-top: 1px solid rgba(255,255,255,.4); }
+    .feature h3 { font-size: 21px; }
+    .feature p { color: rgba(255,255,255,.82); }
+    .feature-index { display: block; margin-bottom: 7px; color: var(--lime); font-family: "Courier New", monospace; font-size: 10px; }
+
+    .audience { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; padding-bottom: 100px; }
+    .audience h2 { max-width: 480px; }
+    .audience-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+    .audience-list span { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .audience-list span::before { margin-right: 9px; color: var(--coral); content: "+"; font-weight: 800; }
+
+    .closing { padding-block: 59px 65px; border-block: 1px solid var(--line); background: var(--lime); color: #17231f; }
+    .closing-inner { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 35px; }
+    .closing .section-kicker { color: #354128; }
+    .closing h2 { max-width: 650px; margin-top: 13px; font-size: 46px; }
+    .closing p { max-width: 570px; margin: 13px 0 0; color: #354128; }
+    .closing .buy-button { border-color: #17231f; background: #17231f; color: #f3f5ea; box-shadow: 5px 5px 0 #fbfcf6; white-space: nowrap; }
+    .closing .buy-button:hover { box-shadow: 3px 3px 0 #fbfcf6; }
+    .closing .buy-button:active { box-shadow: 0 0 0 #fbfcf6; }
+    .fine-print { margin: 18px 0 0; font-size: 11px; }
+    .full-description { padding-block: 25px; border-bottom: 1px solid var(--line); }
+    .full-description summary { color: var(--muted); cursor: pointer; font-family: "Courier New", monospace; font-size: 12px; text-transform: uppercase; }
+    .description-content { max-width: 780px; padding: 20px 0 0; color: var(--muted); font-size: 14px; }
+    .description-content p { margin-bottom: 12px; }
+    .footer { display: flex; justify-content: space-between; gap: 20px; padding-block: 25px; color: var(--muted); font-family: "Courier New", monospace; font-size: 11px; text-transform: uppercase; }
+    .footer a { text-underline-offset: 3px; }
+
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr 1fr; gap: 28px; padding-block: 60px 66px; }
+      h1 { font-size: 56px; }
+      .visual { min-height: 385px; }
+      .section-heading { grid-template-columns: 1fr; gap: 12px; }
+      .included-layout { grid-template-columns: 1fr; gap: 30px; }
+      .audience { gap: 35px; }
+      .closing-inner { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 36px, 460px); }
+      .topbar { min-height: 66px; }
+      .topbar-right { gap: 12px; }
+      .top-link { display: none; }
+      .theme-toggle { min-height: 38px; padding-inline: 9px; }
+      .hero { grid-template-columns: 1fr; gap: 25px; padding-block: 47px 54px; }
+      h1 { max-width: 470px; font-size: 49px; }
+      .hero-copy { font-size: 16px; }
+      .visual { min-height: 365px; }
+      .cover-frame { width: min(310px, 76%); }
+      .sticker { top: 25px; left: 4%; width: 76px; height: 76px; font-size: 10px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat { min-height: 98px; padding: 17px; border-bottom: 1px solid var(--line); }
+      .stat:nth-child(2) { border-right: 0; }
+      .stat:nth-child(n+3) { border-bottom: 0; }
+      .stat strong { font-size: 30px; }
+      .section { padding-block: 72px; }
+      h2 { font-size: 40px; }
+      .steps { grid-template-columns: 1fr; }
+      .step { min-height: 0; padding: 20px 4px 23px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .step:last-child { border-bottom: 0; }
+      .step-number { margin-bottom: 15px; }
+      .included { padding-bottom: 78px; }
+      .included-layout { gap: 26px; padding: 25px 20px; }
+      .included-layout h2 { font-size: 39px; }
+      .feature-list { grid-template-columns: 1fr; }
+      .feature { min-height: 0; padding-block: 15px; }
+      .audience { grid-template-columns: 1fr; gap: 23px; padding-bottom: 76px; }
+      .audience-list { gap: 0 12px; }
+      .audience-list span { font-size: 13px; }
+      .closing { padding-block: 47px; }
+      .closing h2 { font-size: 39px; }
+      .footer { flex-direction: column; gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="shell topbar">
+    <a class="wordmark" href="#top" aria-label="Portfolio field guide home">
+      <span class="mark" aria-hidden="true">{ }</span>
+      <span>Portfolio field guide</span>
+    </a>
+    <div class="topbar-right">
+      <a class="top-link" href="#inside">What’s inside <span aria-hidden="true">↘</span></a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+        <span aria-hidden="true" id="theme-icon">◐</span><span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="shell hero" id="top" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">A practical guide for your next chapter</p>
+        <h1 id="hero-title">Make your GitHub <em>impossible to ignore.</em></h1>
+        <p class="hero-copy"><strong>You’ve been learning to code. Now make your progress visible.</strong> Turn scattered practice into a thoughtful portfolio with a beginner-friendly workbook, guided projects, and a clear 30-day plan.</p>
+        <div class="buy-row">
+          <button class="buy-button" type="button" data-gumroad-action="buy">
+            Get the workbook <span class="button-arrow" aria-hidden="true">↗</span>
+          </button>
+          <div class="price-note">ONE-TIME PAYMENT<br><strong data-gumroad-field="price">$15</strong></div>
+        </div>
+        <div class="review-line" aria-label="Product rating">
+          <span class="review-star" aria-hidden="true">★</span>
+          <span data-gumroad-field="rating">Be the first to review</span>
+          <span aria-hidden="true">·</span>
+          <span data-gumroad-field="review-count">No reviews yet</span>
+        </div>
+      </div>
+      <div class="visual" aria-label="Product workbook cover">
+        <span class="sticker">BUILD<br>IN PUBLIC<br>↗</span>
+        <figure class="cover-frame">
+          <img src="https://public-files.gumroad.com/u5z2fdrlenfmytl9yqb9zvchykxk" alt="Cover artwork for the From Beginner to Hireable GitHub portfolio workbook" width="600" height="600">
+          <figcaption class="cover-caption"><span data-gumroad-field="name">From Beginner to Hireable</span><span>Digital workbook / 01</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="shell stats" aria-label="What's included at a glance">
+      <div class="stat"><strong>10</strong><span>Practical chapters</span></div>
+      <div class="stat"><strong>15</strong><span>Portfolio ideas</span></div>
+      <div class="stat"><strong>3</strong><span>Guided projects</span></div>
+      <div class="stat"><strong>30</strong><span>Days of momentum</span></div>
+    </section>
+
+    <section class="shell section" aria-labelledby="method-title">
+      <div class="section-heading">
+        <p class="section-kicker"><b>01</b> From learning to showing</p>
+        <div>
+          <h2 id="method-title">Build proof, one small step at a time.</h2>
+          <p class="section-intro">A stronger profile isn’t a magic trick. It’s a series of clear, manageable decisions about what to build, how to explain it, and where to put it.</p>
+        </div>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <span class="step-number">01</span>
+          <h3>Find your next project</h3>
+          <p>Choose from practical ideas that help you practise core skills and give your repositories a reason to exist.</p>
+        </article>
+        <article class="step">
+          <span class="step-number">02</span>
+          <h3>Make the work legible</h3>
+          <p>Use guided builds and README examples to document what you made, how it works, and what you learned.</p>
+        </article>
+        <article class="step">
+          <span class="step-number">03</span>
+          <h3>Show steady progress</h3>
+          <p>Follow a 30-day challenge to organise your profile and build a body of work at a pace you can sustain.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell included" id="inside" aria-labelledby="inside-title">
+      <div class="included-layout">
+        <div>
+          <p class="section-kicker"><b>02</b> The working kit</p>
+          <h2 id="inside-title">A portfolio plan you can actually use.</h2>
+          <p class="section-intro">No vague “just build projects” advice. Get prompts, examples, and templates that help you move from blank profile to clear evidence of your work.</p>
+        </div>
+        <div class="feature-list">
+          <article class="feature"><span class="feature-index">01 / THE GUIDE</span><h3>10 practical chapters</h3><p>Improve your profile, repositories, workflow, and project presentation.</p></article>
+          <article class="feature"><span class="feature-index">02 / THE PROMPTS</span><h3>15 project ideas</h3><p>Pick a useful next build instead of losing another evening to “what should I make?”</p></article>
+          <article class="feature"><span class="feature-index">03 / THE BUILDS</span><h3>3 guided projects</h3><p>Work through structured examples from planning to implementation.</p></article>
+          <article class="feature"><span class="feature-index">04 / THE EXAMPLES</span><h3>3 README examples</h3><p>See how to explain a project so another person can understand and explore it.</p></article>
+          <article class="feature"><span class="feature-index">05 / THE SHORTCUTS</span><h3>12 downloadable templates</h3><p>Reusable planning and documentation tools to make the process easier.</p></article>
+          <article class="feature"><span class="feature-index">06 / THE ROUTINE</span><h3>30-day challenge</h3><p>A daily action plan for consistent progress, not an overnight makeover.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell audience" aria-labelledby="audience-title">
+      <div>
+        <p class="section-kicker"><b>03</b> Start where you are</p>
+        <h2 id="audience-title">Made for the early part of the journey.</h2>
+        <p class="section-intro">You don’t need a perfect portfolio or years of experience to begin. Bring the skills you’re practising and a willingness to keep building.</p>
+      </div>
+      <div class="audience-list" aria-label="Who this workbook is for">
+        <span>Beginner developers</span><span>Self-taught coders</span>
+        <span>Computer science students</span><span>Aspiring junior developers</span>
+        <span>Career changers</span><span>Anyone improving their GitHub</span>
+      </div>
+    </section>
+
+    <section class="closing" aria-labelledby="closing-title">
+      <div class="shell closing-inner">
+        <div>
+          <p class="section-kicker">Your next commit can start here</p>
+          <h2 id="closing-title">Give your learning somewhere to go.</h2>
+          <p>Get the workbook and start building a GitHub portfolio that tells a clearer story about what you can do.</p>
+          <p class="fine-print">Educational resource only. Completing the workbook does not guarantee employment or interviews.</p>
+        </div>
+        <button class="buy-button" type="button" data-gumroad-action="buy">
+          Get the workbook <span data-gumroad-field="price">$15</span><span class="button-arrow" aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </section>
+
+    <details class="shell full-description">
+      <summary>Read the full product description</summary>
+      <div class="description-content" data-gumroad-field="description">
+        <p>A practical, beginner-friendly workbook for aspiring software developers who want to turn their coding knowledge into a professional GitHub portfolio.</p>
+      </div>
+    </details>
+  </main>
+
+  <footer class="shell footer">
+    <span>Build it. Explain it. Share it.</span>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById("theme-toggle");
+      var label = document.getElementById("theme-label");
+      var icon = document.getElementById("theme-icon");
+      var savedTheme = "";
+
+      try { savedTheme = localStorage.getItem("portfolio-guide-theme") || ""; } catch (error) {}
+      if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+
+      function updateToggle() {
+        var isDark = root.getAttribute("data-theme") === "dark" || (!root.hasAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        label.textContent = isDark ? "Light mode" : "Dark mode";
+        icon.textContent = isDark ? "☼" : "◐";
+        toggle.setAttribute("aria-pressed", String(isDark));
+      }
+
+      toggle.addEventListener("click", function () {
+        var next = toggle.getAttribute("aria-pressed") === "true" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("portfolio-guide-theme", next); } catch (error) {}
+        updateToggle();
+      });
+      updateToggle();
+    }());
+  </script>
+</body>
+</html>
